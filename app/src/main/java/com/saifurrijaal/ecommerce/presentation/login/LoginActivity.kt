@@ -2,7 +2,6 @@ package com.saifurrijaal.ecommerce.presentation.login
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.saifurrijaal.ecommerce.R
 import com.saifurrijaal.ecommerce.databinding.ActivityLoginBinding
 import com.saifurrijaal.ecommerce.presentation.main.MainActivity
 import com.saifurrijaal.ecommerce.presentation.register.RegisterActivity

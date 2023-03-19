@@ -4,16 +4,23 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.location.Geocoder
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
+import com.google.android.gms.maps.model.LatLng
 import com.saifurrijaal.ecommerce.databinding.LayoutDialogErrorBinding
 import com.saifurrijaal.ecommerce.databinding.LayoutDialogLoadingBinding
 import com.saifurrijaal.ecommerce.databinding.LayoutDialogNotificationBinding
 import com.saifurrijaal.ecommerce.databinding.LayoutDialogSuccessBinding
+import java.io.FileNotFoundException
 import java.io.Serializable
+import java.util.*
 
 fun View.visible(){ visibility = View.VISIBLE }
 fun View.gone(){ visibility = View.GONE }
@@ -68,7 +75,7 @@ fun Context.toast(message: CharSequence): Toast = Toast
         show()
     }
 
-fun showDialogSuccess(context: Context, message: String): AlertDialog {
+fun showDialogSuccess(context: Context, message: String): AlertDialog{
     val binding = LayoutDialogSuccessBinding.inflate(LayoutInflater.from(context))
     binding.tvMessage.text = message
 
@@ -111,4 +118,50 @@ fun showDialogLoading(context: Context): AlertDialog{
         .setView(binding.root)
         .setCancelable(true)
         .create()
+}
+
+/**
+ * Get height screen
+ * */
+fun Activity.getHeightScreen(): Int{
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        val windowMetrics = windowManager.currentWindowMetrics
+        windowMetrics.bounds.height()
+    } else {
+        val displayMetrics = DisplayMetrics()
+        @Suppress("DEPRECATION")
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        displayMetrics.heightPixels
+    }
+}
+
+fun LatLng.convertToAddress(context: Context): String?{
+    val geocode = Geocoder(context, Locale.getDefault())
+    val addresses = geocode.getFromLocation(this.latitude, this.longitude, 1)
+
+    if (addresses!!.size > 0){
+        return addresses[0].getAddressLine(0)
+    }
+    return null
+}
+
+fun getRealPath(context: Context, uri: Uri): String {
+    var realPath = ""
+    try {
+        if (uri.scheme.equals("content")){
+            val projection = arrayOf("_data")
+            val cursor = context.contentResolver.query(uri, projection, null, null, null)
+            if (cursor != null){
+                val idColumn = cursor.getColumnIndexOrThrow("_data")
+                cursor.moveToFirst()
+                realPath = cursor.getString(idColumn)
+                cursor.close()
+            }
+        }else if (uri.scheme.equals("file")){
+            realPath = uri.path.toString()
+        }
+    }catch (e: FileNotFoundException){
+        e.printStackTrace()
+    }
+    return realPath
 }

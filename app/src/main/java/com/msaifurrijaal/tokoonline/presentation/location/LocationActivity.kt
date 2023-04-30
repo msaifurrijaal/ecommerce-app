@@ -1,6 +1,8 @@
 package com.msaifurrijaal.tokoonline.presentation.location
 
 import android.Manifest
+import android.app.Activity
+import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.graphics.Camera
@@ -91,6 +93,15 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
         bindingBottomSheetLocation.fabCurrentLocationChooseLocation.setOnClickListener { requestLocation() }
 
         bindingBottomSheetLocation.fabBackChooseLocation.setOnClickListener { onBackPressed() }
+
+        bindingBottomSheetLocation.btnChooseLocation.setOnClickListener {
+            lastKnownLocation?.let {
+                val resultIntent = Intent()
+                resultIntent.putExtra(EXTRA_LOCATION, it)
+                setResult(Activity.RESULT_OK, resultIntent)
+                finish()
+            }
+        }
     }
 
     private fun collapseBottomSheetLocation() {
@@ -274,5 +285,6 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
         const val REQUEST_CODE_MAP_PERMISSIONS = 1000
         const val REQUEST_CODE_LOCATION = 2000
         const val DEFAULT_ZOOM = 18F
+        const val  EXTRA_LOCATION = "extra_location"
     }
 }

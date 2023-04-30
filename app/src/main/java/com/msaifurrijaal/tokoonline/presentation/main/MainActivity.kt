@@ -7,7 +7,9 @@ import com.msaifurrijaal.tokoonline.R
 import com.msaifurrijaal.tokoonline.databinding.ActivityMainBinding
 import com.msaifurrijaal.tokoonline.presentation.home.HomeFragment
 import com.msaifurrijaal.tokoonline.presentation.myads.MyAdsFragment
+import com.msaifurrijaal.tokoonline.presentation.sell.SellActivity
 import com.msaifurrijaal.tokoonline.presentation.user.UserFragment
+import com.msaifurrijaal.tokoonline.utils.startActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -38,7 +40,7 @@ class MainActivity : AppCompatActivity() {
                     return@setOnItemSelectedListener true
                 }
                 R.id.action_sell -> {
-
+                    startActivity<SellActivity>()
                 }
                 R.id.action_my_ads -> {
                     openFragment(MyAdsFragment())

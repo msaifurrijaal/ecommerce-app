@@ -3,6 +3,7 @@ package com.msaifurrijaal.tokoonline.presentation.main
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
+import com.msaifurrijaal.tokoonline.BuildConfig
 import com.msaifurrijaal.tokoonline.R
 import com.msaifurrijaal.tokoonline.databinding.ActivityMainBinding
 import com.msaifurrijaal.tokoonline.presentation.home.HomeFragment

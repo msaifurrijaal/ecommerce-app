@@ -37,4 +37,9 @@ class UploadPhotoActivity : AppCompatActivity() {
         uploadPhotoAdapter = UploadPhotoAdapter()
         binding.rvUploadPhoto.adapter = uploadPhotoAdapter
     }
+
+    companion object {
+        const val EXTRA_ADS = "extra_ads"
+        const val EXTRA_IS_EDIT = "extra_is_edit"
+    }
 }

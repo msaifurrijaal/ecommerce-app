@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken
 import com.msaifurrijaal.tokoonline.data.model.ApiResponse
 import com.msaifurrijaal.tokoonline.data.model.auth.LoginResponse
 import com.msaifurrijaal.tokoonline.data.model.product.CreateAdsResponse
+import com.msaifurrijaal.tokoonline.data.model.product.UpdateProductResponse
 import com.msaifurrijaal.tokoonline.network.ApiService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -32,4 +33,25 @@ public class ProductRemoteDataSource {
             emit(ApiResponse.Error(t.message.toString()))
         }
     }.flowOn(Dispatchers.IO)
+
+    suspend fun updateAds(token: String, body: String, idProduct: Int): Flow<ApiResponse<UpdateProductResponse>> = flow {
+        try {
+            val response = ApiService.productService().updateAds(token, body, idProduct)
+            if (response.isSuccessful) {
+                val data = response.body()
+                if (data != null) {
+                    emit(ApiResponse.Success(data))
+                } else {
+                    emit(ApiResponse.Empty)
+                }
+            } else {
+                val type = object : TypeToken<UpdateProductResponse>(){}.type
+                val errorResponse: UpdateProductResponse = Gson().fromJson(response.errorBody()?.charStream(), type)
+                emit(ApiResponse.Error(errorResponse.message.toString()))
+            }
+        } catch (t: Throwable) {
+            emit(ApiResponse.Error(t.message.toString()))
+        }
+    }.flowOn(Dispatchers.IO)
+
 }

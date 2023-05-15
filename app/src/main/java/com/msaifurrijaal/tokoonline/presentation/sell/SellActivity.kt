@@ -188,7 +188,53 @@ class SellActivity : AppCompatActivity() {
         address: String,
         desc: String
     ) {
+        val createAdsRequest = CreateAdsRequest(
+            title = title,
+            brand = brand,
+            model = model,
+            year = yearsProduction,
+            condition = isNew,
+            price = price.toInt(),
+            address = address,
+            locLatitude = location?.latitude,
+            locLongitude = location?.longitude,
+            categoryId = 3,
+            description = desc,
+            sold = false
+        )
 
+        val body = Gson().toJson(createAdsRequest)
+
+        sellViewModel.updateAds(token, body, idProduct).observe(this) { state ->
+            when (state) {
+                Resource.Empty -> {
+                    hideLoading()
+                    showDialogNotification(this, "EMPTY")
+                }
+
+                is Resource.Error -> {
+                    hideLoading()
+                    val errorMessage = state.errorMessage
+                    showDialogError(this, errorMessage)
+                }
+
+                Resource.Loading -> {
+                    showLoading()
+                }
+
+                is Resource.Success -> {
+                    hideLoading()
+                    val data = state.data
+                    val dialogSuccess = showDialogSuccess(this, data.message.toString())
+                    dialogSuccess.show()
+
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        dialogSuccess.dismiss()
+                        finish()
+                    }, 2000)
+                }
+            }
+        }
     }
 
     private fun showLoading() {

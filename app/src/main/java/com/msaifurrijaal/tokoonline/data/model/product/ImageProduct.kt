@@ -1,8 +1,13 @@
 package com.msaifurrijaal.tokoonline.data.model.product
 
 
+import android.graphics.Bitmap
+import android.net.Uri
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class ImageProduct(
     @SerializedName("createdAt")
     val createdAt: String? = null,
@@ -13,5 +18,8 @@ data class ImageProduct(
     @SerializedName("product_id")
     val productId: Int? = null,
     @SerializedName("updatedAt")
-    val updatedAt: String? = null
-)
+    val updatedAt: String? = null,
+    val preview: Bitmap? = null,
+    val uri: Uri? = null,
+    val path: String? = null
+): Parcelable

@@ -1,8 +1,11 @@
 package com.msaifurrijaal.tokoonline.data.model.product
 
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class DataProduct(
     @SerializedName("address")
     val address: String? = null,
@@ -38,4 +41,4 @@ data class DataProduct(
     val userId: Int? = null,
     @SerializedName("year")
     val year: String? = null
-)
+): Parcelable

@@ -16,7 +16,7 @@ class UploadPhotoAdapter: RecyclerView.Adapter<UploadPhotoAdapter.ViewHolder>() 
 
     var images = ArrayList<ImageProduct?>()
         set(value) {
-            if (images.size > 0) {
+            if (images.size > 0){
                 images.clear()
             }
             field.addAll(value)
@@ -26,29 +26,30 @@ class UploadPhotoAdapter: RecyclerView.Adapter<UploadPhotoAdapter.ViewHolder>() 
     private var listenerRemove: ((ImageProduct, Int) -> Unit)? = null
     private var listener: ((Int) -> Unit)? = null
 
-    class ViewHolder(private val binding: ItemUploadPhotoBinding): RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder(private val binding: ItemUploadPhotoBinding)
+        : RecyclerView.ViewHolder(binding.root) {
         fun bindItem(
             imageProduct: ImageProduct?,
             listener: ((Int) -> Unit)?,
-            listenerRemove: ((ImageProduct, Int) -> Unit)?)
-        {
+            listenerRemove: ((ImageProduct, Int) -> Unit)?
+        ) {
             val image = imageProduct?.image
             val preview = imageProduct?.preview
 
-            if (imageProduct != null) {
+            if (imageProduct != null){
                 showImage()
                 clickRemove(listenerRemove, imageProduct)
-                if (preview != null) {
+                if (preview != null){
                     Glide.with(itemView)
                         .load(preview)
                         .into(binding.ivPhoto)
-                } else {
+                }else{
                     val imageUrl = BuildConfig.BASE_URL_IMAGE + image
                     Glide.with(itemView)
                         .load(imageUrl)
                         .into(binding.ivPhoto)
                 }
-            } else {
+            }else{
                 hideImage()
                 clickItem(listener)
             }
@@ -56,25 +57,21 @@ class UploadPhotoAdapter: RecyclerView.Adapter<UploadPhotoAdapter.ViewHolder>() 
 
         private fun clickItem(listener: ((Int) -> Unit)?) {
             binding.container.setOnClickListener {
-                if (listener != null) {
+                if (listener != null){
                     listener(adapterPosition)
                 }
             }
         }
 
-        private fun clickRemove(listenerRemove: ((ImageProduct, Int) -> Unit)?, imageProduct: ImageProduct) {
+        private fun clickRemove(
+            listenerRemove: ((ImageProduct, Int) -> Unit)?,
+            imageProduct: ImageProduct
+        ) {
             binding.btnRemove.setOnClickListener {
-                if (listenerRemove != null) {
+                if (listenerRemove != null){
                     listenerRemove(imageProduct, adapterPosition)
                 }
             }
-        }
-
-        private fun showImage() {
-            binding.containerImage.visible()
-            binding.imageViewPhoto.gone()
-            binding.btnRemove.visible()
-            binding.container.disabled()
         }
 
         private fun hideImage() {
@@ -83,34 +80,41 @@ class UploadPhotoAdapter: RecyclerView.Adapter<UploadPhotoAdapter.ViewHolder>() 
             binding.btnRemove.gone()
             binding.container.enabled()
         }
+
+        private fun showImage() {
+            binding.containerImage.visible()
+            binding.imageViewPhoto.gone()
+            binding.btnRemove.visible()
+            binding.container.disabled()
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding = ItemUploadPhotoBinding.inflate(layoutInflater, parent, false)
-        return  ViewHolder(binding)
+        return ViewHolder(binding)
     }
-
-    override fun getItemCount(): Int = images.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bindItem(images[position], listener, listenerRemove)
     }
 
-    fun onClick(listener: ((Int) -> Unit)) {
+    override fun getItemCount(): Int = images.size
+
+    fun onClick(listener: ((Int) -> Unit)){
         this.listener = listener
     }
 
-    fun onClickRemove(listenerRemove: ((ImageProduct, Int) -> Unit)) {
+    fun onClickRemove(listenerRemove: ((ImageProduct, Int) -> Unit)){
         this.listenerRemove = listenerRemove
     }
 
-    fun remove(position: Int) {
+    fun remove(position: Int){
         images[position] = null
         notifyItemChanged(position)
     }
 
-    fun updateItem(imageProduct: ImageProduct, position: Int) {
+    fun updateItem(imageProduct: ImageProduct, position: Int){
         images[position] = imageProduct
         notifyItemChanged(position, imageProduct)
     }

@@ -48,24 +48,24 @@ class UploadPhotoActivity : AppCompatActivity() {
     private val startPhotoResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ){
-        if (it.resultCode == Activity.RESULT_OK) {
+        if (it.resultCode == Activity.RESULT_OK){
             try {
                 val imageUri = it.data?.data
-                if (imageUri != null) {
+                if (imageUri != null){
                     val path = getRealPath(this, imageUri)
                     val imageStream = contentResolver.openInputStream(imageUri)
-                    // convert dari uri ke bitmap
+                    //Convert dari uri ke bitmap
                     val selectedImage = BitmapFactory.decodeStream(imageStream)
                     val imageProduct = ImageProduct(preview = selectedImage, path = path, uri = imageUri)
-                    uploadPhotoAdapter.updateItem(imageProduct = imageProduct, position = position)
+                    uploadPhotoAdapter.updateItem(imageProduct, position)
                 }
-            } catch (e: FileNotFoundException) {
+            }catch (e: FileNotFoundException){
                 e.printStackTrace()
             }
         }
     }
 
-    private val storagePermission = arrayOf(
+    private val storagePermissions = arrayOf(
         Manifest.permission.READ_EXTERNAL_STORAGE
     )
 
@@ -121,11 +121,11 @@ class UploadPhotoActivity : AppCompatActivity() {
             requestOpenStorage()
             position = it
         }
-        
+
         uploadPhotoAdapter.onClickRemove { imageProduct, position ->
             if (imageProduct.preview == null){
                 deleteImageToServer(imageProduct, position)
-            } else {
+            }else{
                 uploadPhotoAdapter.remove(position)
             }
         }
@@ -140,16 +140,16 @@ class UploadPhotoActivity : AppCompatActivity() {
             if (uri != null && path != null){
                 val file = File(path)
                 val typeFile = contentResolver.getType(uri)
-                val mediaTypeFile = typeFile?.toMediaType()
+                val mediaTypeFile= typeFile?.toMediaType()
                 val requestPhotoFile = file.asRequestBody(mediaTypeFile)
-                val multipartBody = MultipartBody.Part.createFormData("file", file.name, requestPhotoFile)
+                val multipartBody = MultipartBody.Part.createFormData("files", file.name, requestPhotoFile)
                 imagesParts.add(multipartBody)
             }
         }
 
         val id = dataProduct.id
 
-        uploadPhotoViewModel.uploadImages(token, id!!, imagesParts).observe(this){ state ->
+        uploadPhotoViewModel.uploadImages(token, id!!, imagesParts).observe(this){ state->
             when(state){
                 Resource.Empty -> {
                     dialogLoading.dismiss()
@@ -179,13 +179,13 @@ class UploadPhotoActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkValid(images: java.util.ArrayList<ImageProduct?>): Boolean {
+    private fun checkValid(images: ArrayList<ImageProduct?>): Boolean {
         var isValid = false
         for (image in images){
             if (image?.path != null || image?.image != null){
                 isValid = true
                 break
-            } else {
+            }else{
                 isValid = false
                 showDialogError(this, "Please select your photo")
                 break
@@ -196,8 +196,8 @@ class UploadPhotoActivity : AppCompatActivity() {
 
     private fun deleteImageToServer(imageProduct: ImageProduct, position: Int) {
         if (imageProduct.id != null){
-            uploadPhotoViewModel.deleteImages(token, imageProduct.id).observe(this) { state ->
-                when(state) {
+            uploadPhotoViewModel.deleteImages(token, imageProduct.id).observe(this){state->
+                when(state){
                     Resource.Empty -> {
                         dialogLoading.dismiss()
                         showDialogNotification(this, "EMPTY")
@@ -222,13 +222,13 @@ class UploadPhotoActivity : AppCompatActivity() {
     private fun requestOpenStorage() {
         if (checkPermissionStorage()){
             openStorage()
-        } else {
+        }else{
             requestPermissionStorage()
         }
     }
 
     private fun requestPermissionStorage() {
-        requestPermissions(storagePermission, REQUEST_CODE_STORAGE_PERMISSION)
+        requestPermissions(storagePermissions, REQUEST_CODE_STORAGE_PERMISSION)
     }
 
     private fun openStorage() {
@@ -239,7 +239,7 @@ class UploadPhotoActivity : AppCompatActivity() {
 
     private fun checkPermissionStorage(): Boolean {
         var isHasPermission = false
-        for (permission in storagePermission){
+        for (permission in storagePermissions){
             isHasPermission = ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
         }
         return isHasPermission
@@ -253,7 +253,7 @@ class UploadPhotoActivity : AppCompatActivity() {
             images.addAll(dataImages)
         }
         if (images.size < 8){
-            val total  = 8 - images.size
+            val total = 8 - images.size
             for (i in 0 until total){
                 images.add(null)
             }
@@ -263,7 +263,7 @@ class UploadPhotoActivity : AppCompatActivity() {
         binding.rvUploadPhoto.adapter = uploadPhotoAdapter
     }
 
-    companion object {
+    companion object{
         const val EXTRA_ADS = "extra_ads"
         const val EXTRA_IS_EDIT = "extra_is_edit"
         const val REQUEST_CODE_STORAGE_PERMISSION = 1000

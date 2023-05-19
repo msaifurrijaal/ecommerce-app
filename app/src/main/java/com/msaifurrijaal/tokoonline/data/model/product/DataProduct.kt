@@ -32,7 +32,7 @@ data class DataProduct(
     @SerializedName("price")
     val price: Int? = null,
     @SerializedName("sold")
-    val sold: Boolean? = null,
+    var sold: Boolean? = null,
     @SerializedName("title")
     val title: String? = null,
     @SerializedName("updatedAt")

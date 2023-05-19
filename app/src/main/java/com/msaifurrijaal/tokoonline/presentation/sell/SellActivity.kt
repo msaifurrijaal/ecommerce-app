@@ -7,13 +7,16 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.Gson
 import com.msaifurrijaal.tokoonline.R
+import com.msaifurrijaal.tokoonline.data.hawkstorage.HawkStorage
 import com.msaifurrijaal.tokoonline.data.model.Resource
 import com.msaifurrijaal.tokoonline.data.model.product.CreateAdsRequest
+import com.msaifurrijaal.tokoonline.data.model.product.DataProduct
 import com.msaifurrijaal.tokoonline.databinding.ActivitySellBinding
 import com.msaifurrijaal.tokoonline.presentation.location.LocationActivity
 import com.msaifurrijaal.tokoonline.presentation.uploadphoto.UploadPhotoActivity
@@ -56,8 +59,50 @@ class SellActivity : AppCompatActivity() {
         dialogLoading = showDialogLoading(this)
         sellViewModel = ViewModelProvider(this).get(SellViewModel::class.java)
 
+        getToken()
+        getDataIntent()
         onAction()
 
+    }
+
+    private fun getDataIntent() {
+        if (intent != null){
+            isEdit = intent.getBooleanExtra(EXTRA_IS_EDIT, false)
+            val dataProduct = intent.getParcelableExtra<DataProduct>(EXTRA_DATA_PRODUCT)
+
+            Log.d("coba", "onAction: $isEdit")
+            if (dataProduct != null){
+                idProduct = dataProduct.id!!
+                showDataProduct(dataProduct)
+            }
+        }
+    }
+
+    private fun showDataProduct(dataProduct: DataProduct) {
+        binding.etTitleProductSell.setText(dataProduct.title)
+        binding.etBrandSell.setText(dataProduct.brand)
+        binding.etModelProductSell.setText(dataProduct.model)
+        binding.etYearProductSell.setText(dataProduct.year)
+        binding.etPriceProductSell.setText(dataProduct.price.toString())
+        binding.etAddressSell.setText(dataProduct.address)
+        binding.etDescProductSell.setText(dataProduct.description)
+        binding.btnSubmitSell.text = getString(R.string.update)
+
+        if (dataProduct.condition == true){
+            binding.rbNewSell.isChecked = true
+        }else{
+            binding.rbSecondHandSell.isChecked = true
+        }
+
+        location = LatLng(
+            dataProduct.locLatitude!!.toDouble(),
+            dataProduct.locLongitude!!.toDouble()
+        )
+    }
+
+    private fun getToken() {
+        val user = HawkStorage.instance(this).getUser()
+        token = user.accessToken
     }
 
     private fun onAction() {
@@ -315,6 +360,11 @@ class SellActivity : AppCompatActivity() {
                 true
             }
         }
+    }
+
+    companion object{
+        const val EXTRA_IS_EDIT = "extra_is_edit"
+        const val EXTRA_DATA_PRODUCT = "extra_data_product"
     }
 
 }
